@@ -1,4 +1,24 @@
-import { DashboardStats } from '@/types';
+import { DashboardStats } from "@/types";
+
+export interface RecentAppointment {
+  id: string;
+  patientName: string;
+  doctorName: string;
+  time: string;
+  type: string;
+  status: string;
+}
+
+export interface WeeklyAppointmentPoint {
+  day: string;
+  appointments: number;
+}
+
+export interface AppointmentStatusPoint {
+  status: string;
+  count: number;
+  color: string;
+}
 
 // Mock data service - replace with actual API calls
 export class DashboardService {
@@ -10,7 +30,7 @@ export class DashboardService {
     // TODO: Replace with actual API call
     // const response = await fetch('/api/dashboard-stats');
     // return response.json();
-    
+
     // Mock data for development
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -39,42 +59,42 @@ export class DashboardService {
    * Fetches recent appointments for dashboard
    * Backend endpoint: GET /api/appointments/recent?limit=5
    */
-  static async getRecentAppointments() {
+  static async getRecentAppointments(): Promise<RecentAppointment[]> {
     // TODO: Replace with actual API call
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve([
           {
-            id: '1',
-            patientName: 'John Doe',
-            doctorName: 'whiteghost',
-            time: '2:30 PM',
-            type: 'Consultation',
-            status: 'confirmed',
+            id: "1",
+            patientName: "John Doe",
+            doctorName: "whiteghost",
+            time: "2:30 PM",
+            type: "Consultation",
+            status: "confirmed",
           },
           {
-            id: '2',
-            patientName: 'Jane Smith',
-            doctorName: 'Dr. Michael Chen',
-            time: '3:00 PM',
-            type: 'Follow-up',
-            status: 'in-progress',
+            id: "2",
+            patientName: "Jane Smith",
+            doctorName: "Dr. Michael Chen",
+            time: "3:00 PM",
+            type: "Follow-up",
+            status: "in-progress",
           },
           {
-            id: '3',
-            patientName: 'Robert Wilson',
-            doctorName: 'Dr. Emily Rodriguez',
-            time: '3:30 PM',
-            type: 'Checkup',
-            status: 'scheduled',
+            id: "3",
+            patientName: "Robert Wilson",
+            doctorName: "Dr. Emily Rodriguez",
+            time: "3:30 PM",
+            type: "Checkup",
+            status: "scheduled",
           },
           {
-            id: '4',
-            patientName: 'Maria Garcia',
-            doctorName: 'whiteghost',
-            time: '4:00 PM',
-            type: 'Consultation',
-            status: 'scheduled',
+            id: "4",
+            patientName: "Maria Garcia",
+            doctorName: "whiteghost",
+            time: "4:00 PM",
+            type: "Consultation",
+            status: "scheduled",
           },
         ]);
       }, 300);
@@ -85,18 +105,18 @@ export class DashboardService {
    * Fetches weekly appointment statistics
    * Backend endpoint: GET /api/analytics/weekly-appointments
    */
-  static async getWeeklyAppointments() {
+  static async getWeeklyAppointments(): Promise<WeeklyAppointmentPoint[]> {
     // TODO: Replace with actual API call
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve([
-          { day: 'Mon', appointments: 45 },
-          { day: 'Tue', appointments: 52 },
-          { day: 'Wed', appointments: 38 },
-          { day: 'Thu', appointments: 61 },
-          { day: 'Fri', appointments: 43 },
-          { day: 'Sat', appointments: 29 },
-          { day: 'Sun', appointments: 18 },
+          { day: "Mon", appointments: 45 },
+          { day: "Tue", appointments: 52 },
+          { day: "Wed", appointments: 38 },
+          { day: "Thu", appointments: 61 },
+          { day: "Fri", appointments: 43 },
+          { day: "Sat", appointments: 29 },
+          { day: "Sun", appointments: 18 },
         ]);
       }, 400);
     });
@@ -106,15 +126,17 @@ export class DashboardService {
    * Fetches appointment status distribution
    * Backend endpoint: GET /api/analytics/appointment-status-today
    */
-  static async getAppointmentStatusDistribution() {
+  static async getAppointmentStatusDistribution(): Promise<
+    AppointmentStatusPoint[]
+  > {
     // TODO: Replace with actual API call
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve([
-          { status: 'Completed', count: 89, color: 'bg-success-500' },
-          { status: 'Scheduled', count: 34, color: 'bg-primary-500' },
-          { status: 'Pending', count: 23, color: 'bg-warning-500' },
-          { status: 'Cancelled', count: 12, color: 'bg-error-500' },
+          { status: "Completed", count: 89, color: "bg-success-500" },
+          { status: "Scheduled", count: 34, color: "bg-primary-500" },
+          { status: "Pending", count: 23, color: "bg-warning-500" },
+          { status: "Cancelled", count: 12, color: "bg-error-500" },
         ]);
       }, 350);
     });

@@ -7,7 +7,7 @@ export interface Patient {
   email: string;
   phone: string;
   dateOfBirth: string;
-  gender: 'male' | 'female' | 'other';
+  gender: "male" | "female" | "other";
   address: {
     street: string;
     city: string;
@@ -69,8 +69,14 @@ export interface Appointment {
   doctorId: string;
   dateTime: string;
   duration: number; // minutes
-  type: 'consultation' | 'follow-up' | 'emergency' | 'routine-checkup';
-  status: 'scheduled' | 'confirmed' | 'in-progress' | 'completed' | 'cancelled' | 'no-show';
+  type: "consultation" | "follow-up" | "emergency" | "routine-checkup";
+  status:
+    | "scheduled"
+    | "confirmed"
+    | "in-progress"
+    | "completed"
+    | "cancelled"
+    | "no-show";
   reason: string;
   notes?: string;
   symptoms?: string[];
@@ -127,7 +133,7 @@ export interface PaginatedResponse<T> {
 // Filter and search types
 export interface PatientFilters {
   search?: string;
-  gender?: Patient['gender'];
+  gender?: Patient["gender"];
   ageRange?: {
     min: number;
     max: number;
@@ -145,8 +151,8 @@ export interface DoctorFilters {
 
 export interface AppointmentFilters {
   search?: string;
-  status?: Appointment['status'];
-  type?: Appointment['type'];
+  status?: Appointment["status"];
+  type?: Appointment["type"];
   dateRange?: {
     start: string;
     end: string;
@@ -183,3 +189,12 @@ export interface ChartData {
     borderColor?: string;
   }[];
 }
+
+export type AppProfile = "hospital" | "medical-staff" | "patient";
+
+export type OnboardingStep =
+  | "hospital-registration"
+  | "legal-verification"
+  | "onboarding-status"
+  | "verification-pending"
+  | "accreditation-granted";

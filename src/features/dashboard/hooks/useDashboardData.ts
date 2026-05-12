@@ -1,12 +1,17 @@
-import { useState, useEffect } from 'react';
-import { DashboardService } from '../services/dashboardService';
-import { DashboardStats } from '@/types';
+import { useState, useEffect } from "react";
+import {
+  AppointmentStatusPoint,
+  DashboardService,
+  RecentAppointment,
+  WeeklyAppointmentPoint,
+} from "../services/dashboardService";
+import { DashboardStats } from "@/types";
 
 interface DashboardData {
   stats: DashboardStats | null;
-  recentAppointments: any[];
-  weeklyAppointments: any[];
-  appointmentStatusDistribution: any[];
+  recentAppointments: RecentAppointment[];
+  weeklyAppointments: WeeklyAppointmentPoint[];
+  appointmentStatusDistribution: AppointmentStatusPoint[];
   isLoading: boolean;
   error: string | null;
 }
@@ -24,10 +29,15 @@ export function useDashboardData(): DashboardData {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        setData(prev => ({ ...prev, isLoading: true, error: null }));
+        setData((prev) => ({ ...prev, isLoading: true, error: null }));
 
         // Fetch all dashboard data in parallel
-        const [stats, recentAppointments, weeklyAppointments, statusDistribution] = await Promise.all([
+        const [
+          stats,
+          recentAppointments,
+          weeklyAppointments,
+          statusDistribution,
+        ] = await Promise.all([
           DashboardService.getDashboardStats(),
           DashboardService.getRecentAppointments(),
           DashboardService.getWeeklyAppointments(),
@@ -43,10 +53,13 @@ export function useDashboardData(): DashboardData {
           error: null,
         });
       } catch (error) {
-        setData(prev => ({
+        setData((prev) => ({
           ...prev,
           isLoading: false,
-          error: error instanceof Error ? error.message : 'Failed to fetch dashboard data',
+          error:
+            error instanceof Error
+              ? error.message
+              : "Failed to fetch dashboard data",
         }));
       }
     };
