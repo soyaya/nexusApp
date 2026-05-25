@@ -1,14 +1,14 @@
-import { useState, useEffect } from 'react';
-import { Button } from '@/shared/components/ui/Button';
-import { 
+import { useState, useEffect } from "react";
+import { Button } from "@/shared/components/ui/Button";
+import {
   Clock,
   Plus,
   Pause,
   Play,
   Square,
   Users,
-  Activity
-} from 'lucide-react';
+  Activity,
+} from "lucide-react";
 
 interface ActiveShiftOverlayProps {
   shiftData: {
@@ -22,27 +22,27 @@ interface ActiveShiftOverlayProps {
   onEndShift: () => void;
 }
 
-export function ActiveShiftOverlay({ 
-  shiftData, 
-  onRecordNewPatient, 
-  onPauseShift, 
-  onEndShift 
+export function ActiveShiftOverlay({
+  shiftData,
+  onRecordNewPatient,
+  onPauseShift,
+  onEndShift,
 }: ActiveShiftOverlayProps) {
-  const [elapsedTime, setElapsedTime] = useState('4:23');
+  const [elapsedTime, setElapsedTime] = useState("4:23");
   const [isPaused, setIsPaused] = useState(false);
-  const [patientsSeenToday, setPatientsSeenToday] = useState(12);
+  const [patientsSeenToday] = useState(12);
 
   // Simulate timer counting up
   useEffect(() => {
     if (isPaused) return;
-    
+
     const interval = setInterval(() => {
-      setElapsedTime(prev => {
-        const [hours, minutes] = prev.split(':').map(Number);
+      setElapsedTime((prev) => {
+        const [hours, minutes] = prev.split(":").map(Number);
         const totalMinutes = hours * 60 + minutes + 1;
         const newHours = Math.floor(totalMinutes / 60);
         const newMins = totalMinutes % 60;
-        return `${newHours}:${newMins.toString().padStart(2, '0')}`;
+        return `${newHours}:${newMins.toString().padStart(2, "0")}`;
       });
     }, 60000); // Update every minute
 
@@ -74,7 +74,9 @@ export function ActiveShiftOverlay({
             <div className="flex items-center space-x-2">
               <Clock className="h-5 w-5 text-primary-600" />
               <div className="text-center">
-                <p className="text-3xl font-bold text-primary-600">{elapsedTime}</p>
+                <p className="text-3xl font-bold text-primary-600">
+                  {elapsedTime}
+                </p>
                 <p className="text-xs text-neutral-500">Hours Active</p>
               </div>
             </div>
@@ -83,7 +85,9 @@ export function ActiveShiftOverlay({
             <div className="flex items-center space-x-2">
               <Users className="h-5 w-5 text-secondary-600" />
               <div className="text-center">
-                <p className="text-2xl font-bold text-secondary-600">{patientsSeenToday}</p>
+                <p className="text-2xl font-bold text-secondary-600">
+                  {patientsSeenToday}
+                </p>
                 <p className="text-xs text-neutral-500">Patients Today</p>
               </div>
             </div>
@@ -132,17 +136,24 @@ export function ActiveShiftOverlay({
         <div className="flex items-center justify-between mt-3 pt-3 border-t border-neutral-200">
           <div className="flex items-center space-x-6 text-sm text-neutral-600">
             <div className="flex items-center space-x-2">
-              <div className={`w-2 h-2 rounded-full ${isPaused ? 'bg-warning-500' : 'bg-success-500'}`}></div>
-              <span>{isPaused ? 'Shift Paused' : 'Shift Active'}</span>
+              <div
+                className={`w-2 h-2 rounded-full ${isPaused ? "bg-warning-500" : "bg-success-500"}`}
+              ></div>
+              <span>{isPaused ? "Shift Paused" : "Shift Active"}</span>
             </div>
-            <div>Started: {new Date(shiftData.startTime).toLocaleTimeString()}</div>
+            <div>
+              Started: {new Date(shiftData.startTime).toLocaleTimeString()}
+            </div>
             <div>Rate: ₦{shiftData.hourlyRate.toLocaleString()}/hour</div>
           </div>
-          
+
           <div className="text-sm text-neutral-600">
             <span>Estimated Earnings: </span>
             <span className="font-semibold text-success-600">
-              ₦{(parseFloat(elapsedTime.replace(':', '.')) * shiftData.hourlyRate).toLocaleString()}
+              ₦
+              {(
+                parseFloat(elapsedTime.replace(":", ".")) * shiftData.hourlyRate
+              ).toLocaleString()}
             </span>
           </div>
         </div>

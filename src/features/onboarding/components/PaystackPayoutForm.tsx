@@ -1,7 +1,18 @@
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/Card';
-import { Button } from '@/shared/components/ui/Button';
-import { CreditCard, Bank, Shield, CheckCircle, AlertCircle } from 'lucide-react';
+import { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/shared/components/ui/Card";
+import { Button } from "@/shared/components/ui/Button";
+import {
+  Building2,
+  CreditCard,
+  Shield,
+  CheckCircle,
+  AlertCircle,
+} from "lucide-react";
 
 interface PaystackPayoutFormProps {
   onComplete: () => void;
@@ -18,83 +29,92 @@ interface PayoutData {
 }
 
 const nigerianBanks = [
-  { code: '044', name: 'Access Bank' },
-  { code: '014', name: 'Afribank Nigeria Plc' },
-  { code: '023', name: 'Citibank Nigeria Limited' },
-  { code: '050', name: 'Ecobank Nigeria Plc' },
-  { code: '040', name: 'Equitorial Trust Bank Limited' },
-  { code: '011', name: 'First Bank of Nigeria Limited' },
-  { code: '214', name: 'First City Monument Bank Plc' },
-  { code: '058', name: 'Guaranty Trust Bank Plc' },
-  { code: '030', name: 'Heritage Banking Company Ltd' },
-  { code: '082', name: 'Keystone Bank Limited' },
-  { code: '076', name: 'Polaris Bank Limited' },
-  { code: '221', name: 'Stanbic IBTC Bank Plc' },
-  { code: '068', name: 'Standard Chartered Bank Nigeria Limited' },
-  { code: '232', name: 'Sterling Bank Plc' },
-  { code: '032', name: 'Union Bank of Nigeria Plc' },
-  { code: '033', name: 'United Bank for Africa Plc' },
-  { code: '215', name: 'Unity Bank Plc' },
-  { code: '035', name: 'Wema Bank Plc' },
-  { code: '057', name: 'Zenith Bank Plc' }
+  { code: "044", name: "Access Bank" },
+  { code: "014", name: "Afribank Nigeria Plc" },
+  { code: "023", name: "Citibank Nigeria Limited" },
+  { code: "050", name: "Ecobank Nigeria Plc" },
+  { code: "040", name: "Equitorial Trust Bank Limited" },
+  { code: "011", name: "First Bank of Nigeria Limited" },
+  { code: "214", name: "First City Monument Bank Plc" },
+  { code: "058", name: "Guaranty Trust Bank Plc" },
+  { code: "030", name: "Heritage Banking Company Ltd" },
+  { code: "082", name: "Keystone Bank Limited" },
+  { code: "076", name: "Polaris Bank Limited" },
+  { code: "221", name: "Stanbic IBTC Bank Plc" },
+  { code: "068", name: "Standard Chartered Bank Nigeria Limited" },
+  { code: "232", name: "Sterling Bank Plc" },
+  { code: "032", name: "Union Bank of Nigeria Plc" },
+  { code: "033", name: "United Bank for Africa Plc" },
+  { code: "215", name: "Unity Bank Plc" },
+  { code: "035", name: "Wema Bank Plc" },
+  { code: "057", name: "Zenith Bank Plc" },
 ];
 
-export function PaystackPayoutForm({ onComplete, onBack }: PaystackPayoutFormProps) {
+export function PaystackPayoutForm({
+  onComplete,
+  onBack,
+}: PaystackPayoutFormProps) {
   const [payoutData, setPayoutData] = useState<PayoutData>({
-    accountNumber: '',
-    bankCode: '',
-    accountName: '',
-    bvn: '',
-    phoneNumber: '',
-    email: ''
+    accountNumber: "",
+    bankCode: "",
+    accountName: "",
+    bvn: "",
+    phoneNumber: "",
+    email: "",
   });
 
   const [isVerifying, setIsVerifying] = useState(false);
-  const [verificationStatus, setVerificationStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [verificationStatus, setVerificationStatus] = useState<
+    "idle" | "success" | "error"
+  >("idle");
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const handleInputChange = (field: keyof PayoutData, value: string) => {
-    setPayoutData(prev => ({
+    setPayoutData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
-    
+
     // Reset verification status when account details change
-    if (field === 'accountNumber' || field === 'bankCode') {
-      setVerificationStatus('idle');
+    if (field === "accountNumber" || field === "bankCode") {
+      setVerificationStatus("idle");
     }
   };
 
   const verifyAccountDetails = async () => {
     if (!payoutData.accountNumber || !payoutData.bankCode) return;
-    
+
     setIsVerifying(true);
-    
+
     // Simulate API call to verify account details
     setTimeout(() => {
       // Mock verification - in real app, this would call Paystack API
-      const mockAccountName = 'Dr. Amina Yusuf';
-      setPayoutData(prev => ({
+      const mockAccountName = "Dr. Amina Yusuf";
+      setPayoutData((prev) => ({
         ...prev,
-        accountName: mockAccountName
+        accountName: mockAccountName,
       }));
-      setVerificationStatus('success');
+      setVerificationStatus("success");
       setIsVerifying(false);
     }, 2000);
   };
 
   const isFormValid = () => {
-    return payoutData.accountNumber && 
-           payoutData.bankCode && 
-           payoutData.accountName &&
-           payoutData.bvn && 
-           payoutData.phoneNumber && 
-           payoutData.email &&
-           verificationStatus === 'success' &&
-           agreedToTerms;
+    return (
+      payoutData.accountNumber &&
+      payoutData.bankCode &&
+      payoutData.accountName &&
+      payoutData.bvn &&
+      payoutData.phoneNumber &&
+      payoutData.email &&
+      verificationStatus === "success" &&
+      agreedToTerms
+    );
   };
 
-  const selectedBank = nigerianBanks.find(bank => bank.code === payoutData.bankCode);
+  const selectedBank = nigerianBanks.find(
+    (bank) => bank.code === payoutData.bankCode,
+  );
 
   return (
     <div className="min-h-screen bg-neutral-50 p-4 sm:p-6">
@@ -116,21 +136,27 @@ export function PaystackPayoutForm({ onComplete, onBack }: PaystackPayoutFormPro
               <div className="w-8 h-8 rounded-full bg-success-600 text-white flex items-center justify-center text-sm font-semibold">
                 ✓
               </div>
-              <span className="ml-2 text-sm font-medium text-success-600">License Info</span>
+              <span className="ml-2 text-sm font-medium text-success-600">
+                License Info
+              </span>
             </div>
             <div className="w-8 h-px bg-success-300"></div>
             <div className="flex items-center">
               <div className="w-8 h-8 rounded-full bg-success-600 text-white flex items-center justify-center text-sm font-semibold">
                 ✓
               </div>
-              <span className="ml-2 text-sm font-medium text-success-600">Specialty</span>
+              <span className="ml-2 text-sm font-medium text-success-600">
+                Specialty
+              </span>
             </div>
             <div className="w-8 h-px bg-success-300"></div>
             <div className="flex items-center">
               <div className="w-8 h-8 rounded-full bg-primary-600 text-white flex items-center justify-center text-sm font-semibold">
                 3
               </div>
-              <span className="ml-2 text-sm font-medium text-primary-600">Payout</span>
+              <span className="ml-2 text-sm font-medium text-primary-600">
+                Payout
+              </span>
             </div>
           </div>
         </div>
@@ -142,10 +168,12 @@ export function PaystackPayoutForm({ onComplete, onBack }: PaystackPayoutFormPro
               <div className="flex items-start space-x-3">
                 <Shield className="h-5 w-5 text-primary-600 mt-0.5" />
                 <div>
-                  <h3 className="font-semibold text-primary-900 mb-1">Secure Payment Processing</h3>
+                  <h3 className="font-semibold text-primary-900 mb-1">
+                    Secure Payment Processing
+                  </h3>
                   <p className="text-sm text-primary-800">
-                    Your banking information is encrypted and processed securely through Paystack, 
-                    Nigeria's leading payment processor.
+                    Your banking information is encrypted and processed securely
+                    through Paystack, Nigeria's leading payment processor.
                   </p>
                 </div>
               </div>
@@ -156,7 +184,7 @@ export function PaystackPayoutForm({ onComplete, onBack }: PaystackPayoutFormPro
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <Bank className="h-5 w-5 text-primary-600" />
+                <Building2 className="h-5 w-5 text-primary-600" />
                 <span>Bank Account Details</span>
               </CardTitle>
             </CardHeader>
@@ -168,7 +196,9 @@ export function PaystackPayoutForm({ onComplete, onBack }: PaystackPayoutFormPro
                 </label>
                 <select
                   value={payoutData.bankCode}
-                  onChange={(e) => handleInputChange('bankCode', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("bankCode", e.target.value)
+                  }
                   className="w-full p-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   required
                 >
@@ -190,7 +220,9 @@ export function PaystackPayoutForm({ onComplete, onBack }: PaystackPayoutFormPro
                   <input
                     type="text"
                     value={payoutData.accountNumber}
-                    onChange={(e) => handleInputChange('accountNumber', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("accountNumber", e.target.value)
+                    }
                     placeholder="Enter 10-digit account number"
                     maxLength={10}
                     className="flex-1 p-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
@@ -199,21 +231,27 @@ export function PaystackPayoutForm({ onComplete, onBack }: PaystackPayoutFormPro
                   <Button
                     variant="outline"
                     onClick={verifyAccountDetails}
-                    disabled={!payoutData.accountNumber || !payoutData.bankCode || isVerifying}
+                    disabled={
+                      !payoutData.accountNumber ||
+                      !payoutData.bankCode ||
+                      isVerifying
+                    }
                     className="px-4"
                   >
-                    {isVerifying ? 'Verifying...' : 'Verify'}
+                    {isVerifying ? "Verifying..." : "Verify"}
                   </Button>
                 </div>
               </div>
 
               {/* Account Name Verification */}
-              {verificationStatus === 'success' && (
+              {verificationStatus === "success" && (
                 <div className="p-3 bg-success-50 border border-success-200 rounded-lg">
                   <div className="flex items-center space-x-2">
                     <CheckCircle className="h-5 w-5 text-success-600" />
                     <div>
-                      <p className="font-medium text-success-800">Account Verified</p>
+                      <p className="font-medium text-success-800">
+                        Account Verified
+                      </p>
                       <p className="text-sm text-success-700">
                         {payoutData.accountName} • {selectedBank?.name}
                       </p>
@@ -222,12 +260,14 @@ export function PaystackPayoutForm({ onComplete, onBack }: PaystackPayoutFormPro
                 </div>
               )}
 
-              {verificationStatus === 'error' && (
+              {verificationStatus === "error" && (
                 <div className="p-3 bg-error-50 border border-error-200 rounded-lg">
                   <div className="flex items-center space-x-2">
                     <AlertCircle className="h-5 w-5 text-error-600" />
                     <div>
-                      <p className="font-medium text-error-800">Verification Failed</p>
+                      <p className="font-medium text-error-800">
+                        Verification Failed
+                      </p>
                       <p className="text-sm text-error-700">
                         Please check your account number and bank selection.
                       </p>
@@ -255,7 +295,7 @@ export function PaystackPayoutForm({ onComplete, onBack }: PaystackPayoutFormPro
                 <input
                   type="text"
                   value={payoutData.bvn}
-                  onChange={(e) => handleInputChange('bvn', e.target.value)}
+                  onChange={(e) => handleInputChange("bvn", e.target.value)}
                   placeholder="Enter your 11-digit BVN"
                   maxLength={11}
                   className="w-full p-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
@@ -274,7 +314,9 @@ export function PaystackPayoutForm({ onComplete, onBack }: PaystackPayoutFormPro
                 <input
                   type="tel"
                   value={payoutData.phoneNumber}
-                  onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("phoneNumber", e.target.value)
+                  }
                   placeholder="+234 800 000 0000"
                   className="w-full p-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   required
@@ -289,7 +331,7 @@ export function PaystackPayoutForm({ onComplete, onBack }: PaystackPayoutFormPro
                 <input
                   type="email"
                   value={payoutData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
+                  onChange={(e) => handleInputChange("email", e.target.value)}
                   placeholder="your.email@example.com"
                   className="w-full p-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   required
@@ -310,16 +352,22 @@ export function PaystackPayoutForm({ onComplete, onBack }: PaystackPayoutFormPro
                   className="mt-1 h-4 w-4 text-primary-600 focus:ring-primary-500 border-neutral-300 rounded"
                 />
                 <label htmlFor="terms" className="text-sm text-neutral-700">
-                  I agree to the{' '}
-                  <a href="#" className="text-primary-600 hover:text-primary-700 underline">
+                  I agree to the{" "}
+                  <a
+                    href="#"
+                    className="text-primary-600 hover:text-primary-700 underline"
+                  >
                     Terms of Service
-                  </a>{' '}
-                  and{' '}
-                  <a href="#" className="text-primary-600 hover:text-primary-700 underline">
+                  </a>{" "}
+                  and{" "}
+                  <a
+                    href="#"
+                    className="text-primary-600 hover:text-primary-700 underline"
+                  >
                     Privacy Policy
                   </a>
-                  . I understand that my banking information will be securely processed by Paystack 
-                  for payment processing purposes.
+                  . I understand that my banking information will be securely
+                  processed by Paystack for payment processing purposes.
                 </label>
               </div>
             </CardContent>
@@ -330,8 +378,8 @@ export function PaystackPayoutForm({ onComplete, onBack }: PaystackPayoutFormPro
             <Button variant="outline" onClick={onBack} className="sm:w-auto">
               Back to Specialty Selection
             </Button>
-            <Button 
-              onClick={onComplete} 
+            <Button
+              onClick={onComplete}
               disabled={!isFormValid()}
               className="flex-1 sm:flex-none sm:ml-auto"
             >

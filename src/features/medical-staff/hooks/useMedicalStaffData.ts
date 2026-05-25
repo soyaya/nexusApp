@@ -1,5 +1,10 @@
-import { useState, useEffect } from 'react';
-import { MedicalStaffService, DoctorAppointment, PatientVitals, DoctorStats } from '../services/medicalStaffService';
+import { useState, useEffect } from "react";
+import {
+  MedicalStaffService,
+  DoctorAppointment,
+  PatientVitals,
+  DoctorStats,
+} from "../services/medicalStaffService";
 
 interface MedicalStaffData {
   appointments: DoctorAppointment[];
@@ -23,7 +28,7 @@ export function useMedicalStaffData(doctorId: string): MedicalStaffData {
       if (!doctorId) return;
 
       try {
-        setData(prev => ({ ...prev, isLoading: true, error: null }));
+        setData((prev) => ({ ...prev, isLoading: true, error: null }));
 
         // Fetch all medical staff data in parallel
         const [appointments, stats] = await Promise.all([
@@ -32,13 +37,16 @@ export function useMedicalStaffData(doctorId: string): MedicalStaffData {
         ]);
 
         // Find current patient (in-progress appointment) and fetch their vitals
-        const currentAppointment = appointments.find(apt => apt.status === 'in-progress');
+        const currentAppointment = appointments.find(
+          (apt) => apt.status === "in-progress",
+        );
         let currentPatientVitals = null;
-        
+
         if (currentAppointment) {
-          currentPatientVitals = await MedicalStaffService.getCurrentPatientVitals(
-            currentAppointment.patient.id
-          );
+          currentPatientVitals =
+            await MedicalStaffService.getCurrentPatientVitals(
+              currentAppointment.patient.id,
+            );
         }
 
         setData({
@@ -49,10 +57,13 @@ export function useMedicalStaffData(doctorId: string): MedicalStaffData {
           error: null,
         });
       } catch (error) {
-        setData(prev => ({
+        setData((prev) => ({
           ...prev,
           isLoading: false,
-          error: error instanceof Error ? error.message : 'Failed to fetch medical staff data',
+          error:
+            error instanceof Error
+              ? error.message
+              : "Failed to fetch medical staff data",
         }));
       }
     };
@@ -63,19 +74,23 @@ export function useMedicalStaffData(doctorId: string): MedicalStaffData {
   return data;
 }
 
-export function useConsultation(appointmentId: string, patientId: string) {
+export function useConsultation(appointmentId: string, _patientId: string) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const startConsultation = async (doctorId: string) => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
-      const result = await MedicalStaffService.startConsultation(appointmentId, doctorId);
+      const result = await MedicalStaffService.startConsultation(
+        appointmentId,
+        doctorId,
+      );
       return result;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to start consultation';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to start consultation";
       setError(errorMessage);
       throw new Error(errorMessage);
     } finally {
@@ -86,12 +101,16 @@ export function useConsultation(appointmentId: string, patientId: string) {
   const saveNotes = async (consultationId: string, notes: any) => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
-      const result = await MedicalStaffService.saveConsultationNotes(consultationId, notes);
+      const result = await MedicalStaffService.saveConsultationNotes(
+        consultationId,
+        notes,
+      );
       return result;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to save notes';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to save notes";
       setError(errorMessage);
       throw new Error(errorMessage);
     } finally {
@@ -102,12 +121,14 @@ export function useConsultation(appointmentId: string, patientId: string) {
   const completeConsultation = async (consultationId: string) => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
-      const result = await MedicalStaffService.completeConsultation(consultationId);
+      const result =
+        await MedicalStaffService.completeConsultation(consultationId);
       return result;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to complete consultation';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to complete consultation";
       setError(errorMessage);
       throw new Error(errorMessage);
     } finally {
@@ -120,7 +141,7 @@ export function useConsultation(appointmentId: string, patientId: string) {
     saveNotes,
     completeConsultation,
     isLoading,
-    error
+    error,
   };
 }
 
@@ -140,7 +161,11 @@ export function usePatientHistory(patientId: string) {
         const history = await MedicalStaffService.getPatientHistory(patientId);
         setPatientHistory(history);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch patient history');
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Failed to fetch patient history",
+        );
       } finally {
         setIsLoading(false);
       }

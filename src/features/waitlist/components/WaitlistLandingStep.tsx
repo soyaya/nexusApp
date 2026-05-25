@@ -1,0 +1,333 @@
+import {
+  Activity,
+  ArrowRight,
+  Brain,
+  CalendarClock,
+  ClipboardCheck,
+  Sparkles,
+  TrendingDown,
+  UserCheck,
+  Wallet,
+  Zap,
+} from "lucide-react";
+import { Link } from "react-router-dom";
+import { Button } from "@/shared/components/ui/Button";
+import {
+  waitlistInsights,
+  waitlistPartners,
+  waitlistSteps,
+} from "../constants/waitlistContent";
+
+const ecosystemColumns = [
+  {
+    title: "For Hospitals",
+    items: [
+      {
+        title: "On-demand verified staffing",
+        description:
+          "Instantly access a pool of pre-vetted, elite clinical talent ready to fill critical gaps.",
+        icon: UserCheck,
+      },
+      {
+        title: "Automated compliance tracking",
+        description:
+          "Real-time monitoring of credentials and regulatory requirements across your entire facility.",
+        icon: ClipboardCheck,
+      },
+      {
+        title: "Real-time floor monitoring",
+        description:
+          "Visibility into staff distribution and clinical activity for optimized operational flow.",
+        icon: Activity,
+      },
+      {
+        title: "Reduced overhead",
+        description:
+          "Eliminate expensive agency fees and administrative bloat through digital automation.",
+        icon: TrendingDown,
+      },
+    ],
+  },
+  {
+    title: "For Health Workers",
+    items: [
+      {
+        title: "High-priority shift access",
+        description:
+          "Be the first to see and claim premium shifts that match your specialized skillset.",
+        icon: Zap,
+      },
+      {
+        title: "AI-powered clinical documentation (Scribe)",
+        description:
+          "Automate chart notes and summaries, reclaiming up to 2 hours of clinical time daily.",
+        icon: Brain,
+      },
+      {
+        title: "Instant, secure payouts",
+        description:
+          "Receive compensation immediately upon shift completion through our digital ledger.",
+        icon: Wallet,
+      },
+      {
+        title: "Flexible scheduling",
+        description:
+          "Complete autonomy over your work-life balance. Choose where and when you practice.",
+        icon: CalendarClock,
+      },
+    ],
+  },
+] as const;
+
+export function WaitlistLandingStep() {
+  return (
+    <div className="bg-[#f4f6fa]">
+      <section className="px-4 pb-12 pt-12 sm:px-6 lg:px-8 lg:pb-16 lg:pt-20">
+        <div className="mx-auto max-w-6xl text-center">
+          <div className="mx-auto inline-flex items-center gap-2 rounded-full border bg-primaryGreen/90 px-4 py-2 text-sm font-medium bg-gradient-to-b from-onboarding-primaryBlue to-onboarding-primaryGreen bg-clip-text text-transparent shadow-sm">
+            <Sparkles className="h-4 w-4" />
+            Redefining Clinical Efficiency
+          </div>
+
+          <h1 className="mt-6 text-4xl font-semibold tracking-tight text-neutral-950 sm:text-5xl lg:text-6xl">
+            The{" "}
+            <span className="text-onboarding-primaryBlue">Digital Pulse</span>{" "}
+            of Modern Healthcare.
+          </h1>
+
+          <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-neutral-600 sm:text-base">
+            Empowering healthcare facilities with AI-driven documentation and a
+            high-fidelity marketplace for elite clinical talent. Experience the
+            future of medical workflows.
+          </p>
+
+          <div className="mt-8">
+            <Link to="/waitlist/join">
+              <Button className="rounded-xl bg-gradient-to-r from-onboarding-primaryGreen to-onboarding-primaryBlue px-7 py-3 text-sm font-semibold text-white">
+                Join Waitlist <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
+
+          <div className="mx-auto mt-12 max-w-5xl overflow-hidden rounded-2xl border border-neutral-200 bg-[#0a2f4a] shadow-strong">
+            <img
+              src="/waitlist/landing.jpg"
+              alt="Clinical workflow dashboard"
+              className="h-[32rem] w-full object-cover center opacity-75 sm:h-[32rem]"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className="border-y border-neutral-200 bg-[#eef0f5] px-4 py-6 sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-7 gap-y-3 text-xs font-semibold uppercase tracking-[0.15em] text-neutral-500 sm:text-sm">
+          <span className="text-onboarding-primaryBlue">Partnered with</span>
+          {waitlistPartners.map((partner) => (
+            <span key={partner}>{partner}</span>
+          ))}
+        </div>
+      </section>
+
+      <section className="px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
+        <div className="mx-auto max-w-6xl">
+          <div className="text-center">
+            <h2 className="text-4xl font-semibold text-onboarding-primaryGreen">
+              Precision Workflow
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-sm text-neutral-600 sm:text-base">
+              A seamless 3-step transition from registration to your first
+              clinical payout.
+            </p>
+          </div>
+
+          <div className="mt-12 grid gap-6 border-t border-neutral-200 pt-8 md:grid-cols-3">
+            {waitlistSteps.map((step) => (
+              <article key={step.id} className="text-center">
+                <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-onboarding-primaryBlue to-onboarding-primaryGreen text-sm font-semibold text-white">
+                  {step.id}
+                </div>
+                <h3 className="mt-4 text-3xl font-semibold text-neutral-900">
+                  {step.title}
+                </h3>
+                <p className="mx-auto mt-3 max-w-sm text-sm leading-6 text-neutral-600">
+                  {step.description}
+                </p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 pb-14 sm:px-6 lg:px-8 lg:pb-20">
+        <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-2">
+          <article className="relative overflow-hidden rounded-2xl shadow-strong">
+            <img
+              src="/waitlist/hospitals.jpg"
+              alt="Hospital operations"
+              className="h-[24rem] w-full object-cover object-center"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#06345c]/90 via-[#06345c]/45 to-transparent" />
+            <div className="absolute bottom-8 left-8 right-8 text-white">
+              <p className="text-xs uppercase tracking-[0.2em] text-white/70">
+                Institutional Excellence
+              </p>
+              <h2 className="mt-2 text-4xl font-semibold">For Hospitals</h2>
+              <p className="mt-3 text-sm leading-7 text-white/80">
+                Eliminate staffing gaps with automated compliance and verified
+                talent pipelines.
+              </p>
+              <button className="text-sm bg-white text-onboarding-primaryBlue py-4 px-6 rounded-lg">
+                Partner with Us
+              </button>
+            </div>
+          </article>
+
+          <article className="relative overflow-hidden rounded-2xl shadow-strong">
+            <img
+              src="/waitlist/health-workers.jpg"
+              alt="Healthcare worker profile"
+              className="h-[24rem] w-full object-cover object-center"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0b3a63]/90 via-[#0b3a63]/45 to-transparent" />
+            <div className="absolute bottom-8 left-8 right-8 text-white">
+              <p className="text-xs uppercase tracking-[0.2em] text-white/70">
+                Clinician Empowerment
+              </p>
+              <h2 className="mt-2 text-4xl font-semibold">
+                For Health Workers
+              </h2>
+              <p className="mt-3 text-sm leading-7 text-white/80">
+                The freedom to work anywhere, powered by AI documentation that
+                saves hours daily.
+              </p>
+              <button className="text-sm bg-white text-onboarding-primaryBlue py-4 px-6 rounded-lg">
+                Start practicing
+              </button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section className="px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
+        <div className="mx-auto max-w-6xl">
+          <div className="text-center">
+            <h2 className="text-3xl font-semibold bg-gradient-to-br from-onboarding-primaryBlue to-onboarding-primaryGreen bg-clip-text text-transparent sm:text-4xl">
+              Empowering the Ecosystem
+            </h2>
+            <p className="mx-auto mt-3 max-w-3xl text-sm leading-7 text-neutral-600 sm:text-base">
+              A high-fidelity framework designed for precision, reliability, and
+              growth in clinical practice.
+            </p>
+          </div>
+
+          <div className="mt-10 grid gap-6 lg:grid-cols-2">
+            {ecosystemColumns.map((column) => (
+              <article
+                key={column.title}
+                className="rounded-3xl border border-[#e7e9ee] bg-[#f3f4f8] p-7 sm:p-9"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-r from-onboarding-primaryGreen to-onboarding-primaryBlue text-white">
+                    <ClipboardCheck className="h-5 w-5" />
+                  </div>
+                  <h3 className="text-4xl font-semibold text-neutral-900">
+                    {column.title}
+                  </h3>
+                </div>
+
+                <div className="mt-8 space-y-6">
+                  {column.items.map((item) => {
+                    const Icon = item.icon;
+
+                    return (
+                      <div key={item.title} className="flex gap-4">
+                        <Icon className="mt-1 h-5 w-5 shrink-0 text-onboarding-primaryBlue" />
+                        <div>
+                          <p className="text-sm font-semibold text-neutral-900 sm:text-base">
+                            {item.title}
+                          </p>
+                          <p className="mt-1 text-sm leading-7 text-neutral-600 sm:text-base">
+                            {item.description}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
+        <div className="mx-auto max-w-6xl">
+          <div className="text-center">
+            <h2 className="text-3xl font-semibold text-onboarding-primaryGreen sm:text-4xl">
+              Editorial Insights
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-neutral-600 sm:text-base">
+              Stay updated with the latest in clinical tech.
+            </p>
+          </div>
+
+          <div className="mt-8 grid gap-6 lg:grid-cols-3">
+            {waitlistInsights.map((insight) => {
+              return (
+                <article
+                  key={insight.title}
+                  className="overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-soft"
+                >
+                  <div>
+                    <img
+                      src={insight.image}
+                      alt={insight.title}
+                      className="h-44 w-full object-cover center"
+                    />
+                  </div>
+                  <div className="p-5">
+                    <p className="text-xs uppercase tracking-[0.16em] text-neutral-400">
+                      {insight.category}
+                    </p>
+                    <h3 className="mt-3 text-2xl font-semibold text-neutral-900">
+                      {insight.title}
+                    </h3>
+                    <p className="mt-3 text-sm leading-6 text-neutral-600">
+                      {insight.description}
+                    </p>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 pb-16 sm:px-6 lg:px-8 lg:pb-24">
+        <div className="mx-auto max-w-6xl overflow-hidden rounded-2xl bg-[linear-gradient(135deg,_#228eb0,_#46b8ab)] px-6 py-10 text-center text-white shadow-strong sm:px-10 lg:py-14">
+          <h2 className="text-3xl font-semibold sm:text-4xl">
+            Ready for the Pulse?
+          </h2>
+          <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-white/90 sm:text-base">
+            Join the waitlist to be part of the first cohort of clinicians and
+            facilities in our high-fidelity private beta.
+          </p>
+
+          <div className="mx-auto mt-7 flex max-w-xl flex-col gap-3 sm:flex-row">
+            <input
+              type="email"
+              placeholder="Enter your work email"
+              className="h-12 flex-1 rounded-lg border border-white/70 bg-white px-4 text-sm text-neutral-800 outline-none"
+              readOnly
+            />
+            <Link to="/waitlist/join" className="sm:w-auto">
+              <Button className="h-12 w-full rounded-lg bg-white px-6 text-sm font-semibold text-onboarding-primaryBlue hover:bg-neutral-100">
+                Secure My Spot
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}

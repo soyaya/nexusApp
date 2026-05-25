@@ -2,7 +2,6 @@ import { Navigate } from "react-router-dom";
 import type { RouteObject } from "react-router-dom";
 import { RoleLayout } from "@/layouts/RoleLayout";
 import type { AppProfile } from "@/types";
-import { DEFAULT_REDIRECT } from "./paths";
 import { buildOnboardingRoutes } from "./roles/onboarding.routes";
 import {
   hospitalPageRoutes,
@@ -20,8 +19,9 @@ function buildRoleTree(
   pageRoutes: RouteObject[],
   standaloneRoutes: RouteObject[] = [],
 ): RouteObject {
-  const requiredRole = profile === 'medical-staff' ? 'medical-staff' : 'hospital-admin';
-  
+  const requiredRole =
+    profile === "medical-staff" ? "medical-staff" : "hospital-admin";
+
   return {
     path: `${basePath}/*`,
     element: (

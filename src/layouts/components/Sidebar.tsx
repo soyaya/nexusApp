@@ -7,7 +7,6 @@ import {
   LayoutDashboard,
   MessageSquare,
   Stethoscope,
-  UserCheck,
   Users,
   Settings,
   HelpCircle,
@@ -96,7 +95,7 @@ export function Sidebar({ isOpen, onClose, profile }: SidebarProps) {
 
   const handleLogout = () => {
     authUtils.clearAuth();
-    navigate('/auth/login');
+    navigate("/auth/login");
     onClose(); // Close sidebar after logout
   };
 

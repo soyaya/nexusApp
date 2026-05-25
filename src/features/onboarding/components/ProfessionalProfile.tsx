@@ -1,21 +1,9 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Card, CardContent } from '@/shared/components/ui/Card';
-import { Button } from '@/shared/components/ui/Button';
-import { NexusCareLogo } from '@/shared/components/ui/NexusCareLogo';
-import { X, Bell, Award, Stethoscope } from 'lucide-react';
-
-const specialties = [
-  { id: 'general-practice', label: 'General Practice', icon: '🩺' },
-  { id: 'surgery', label: 'Surgery', icon: '🔪' },
-  { id: 'pediatrics', label: 'Pediatrics', icon: '👶' },
-  { id: 'nursing', label: 'Nursing', icon: '👩‍⚕️' },
-  { id: 'anesthesiology', label: 'Anesthesiology', icon: '💉' },
-  { id: 'cardiology', label: 'Cardiology', icon: '❤️' },
-  { id: 'dermatology', label: 'Dermatology', icon: '🧴' },
-  { id: 'orthopedics', label: 'Orthopedics', icon: '🦴' },
-  { id: 'other', label: 'Other', icon: '➕' }
-];
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Card, CardContent } from "@/shared/components/ui/Card";
+import { Button } from "@/shared/components/ui/Button";
+import { NexusCareLogo } from "@/shared/components/ui/NexusCareLogo";
+import { X, Bell, Award, Stethoscope } from "lucide-react";
 
 interface ProfessionalData {
   licenseNumber: string;
@@ -23,65 +11,72 @@ interface ProfessionalData {
   yearsOfExperience: string;
 }
 
+interface ProfessionalFormErrors {
+  licenseNumber?: string;
+  specialties?: string;
+  yearsOfExperience?: string;
+}
+
 export function ProfessionalProfile() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<ProfessionalData>({
-    licenseNumber: '',
+    licenseNumber: "",
     specialties: [],
-    yearsOfExperience: ''
+    yearsOfExperience: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<Partial<ProfessionalData>>({});
+  const [errors, setErrors] = useState<ProfessionalFormErrors>({});
 
   const handleLicenseChange = (value: string) => {
     // Format license number as MDCN/R/XXXX
-    let formatted = value.toUpperCase().replace(/[^A-Z0-9/]/g, '');
-    
-    if (!formatted.startsWith('MDCN/R/') && formatted.length > 0) {
-      if (formatted.startsWith('MDCN/R')) {
+    let formatted = value.toUpperCase().replace(/[^A-Z0-9/]/g, "");
+
+    if (!formatted.startsWith("MDCN/R/") && formatted.length > 0) {
+      if (formatted.startsWith("MDCN/R")) {
         formatted = formatted;
-      } else if (formatted.startsWith('MDCN')) {
-        formatted = formatted.replace('MDCN', 'MDCN/R/');
+      } else if (formatted.startsWith("MDCN")) {
+        formatted = formatted.replace("MDCN", "MDCN/R/");
       } else {
-        formatted = 'MDCN/R/' + formatted;
+        formatted = "MDCN/R/" + formatted;
       }
     }
 
-    setFormData(prev => ({ ...prev, licenseNumber: formatted }));
-    
+    setFormData((prev) => ({ ...prev, licenseNumber: formatted }));
+
     if (errors.licenseNumber) {
-      setErrors(prev => ({ ...prev, licenseNumber: undefined }));
+      setErrors((prev) => ({ ...prev, licenseNumber: undefined }));
     }
   };
 
   const toggleSpecialty = (specialtyId: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       specialties: prev.specialties.includes(specialtyId)
-        ? prev.specialties.filter(id => id !== specialtyId)
-        : [...prev.specialties, specialtyId]
+        ? prev.specialties.filter((id) => id !== specialtyId)
+        : [...prev.specialties, specialtyId],
     }));
 
     if (errors.specialties) {
-      setErrors(prev => ({ ...prev, specialties: undefined }));
+      setErrors((prev) => ({ ...prev, specialties: undefined }));
     }
   };
 
   const validateForm = (): boolean => {
-    const newErrors: Partial<ProfessionalData> = {};
+    const newErrors: ProfessionalFormErrors = {};
 
     if (!formData.licenseNumber.trim()) {
-      newErrors.licenseNumber = 'License number is required';
+      newErrors.licenseNumber = "License number is required";
     } else if (!formData.licenseNumber.match(/^MDCN\/R\/\d{4,}$/)) {
-      newErrors.licenseNumber = 'Please enter a valid MDCN license number (e.g., MDCN/R/12345)';
+      newErrors.licenseNumber =
+        "Please enter a valid MDCN license number (e.g., MDCN/R/12345)";
     }
 
     if (formData.specialties.length === 0) {
-      newErrors.specialties = 'Please select at least one specialty';
+      newErrors.specialties = "Please select at least one specialty";
     }
 
     if (!formData.yearsOfExperience) {
-      newErrors.yearsOfExperience = 'Years of experience is required';
+      newErrors.yearsOfExperience = "Years of experience is required";
     }
 
     setErrors(newErrors);
@@ -90,29 +85,29 @@ export function ProfessionalProfile() {
 
   const handleContinue = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     setIsLoading(true);
 
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
       // Store professional data
-      localStorage.setItem('professionalData', JSON.stringify(formData));
-      
+      localStorage.setItem("professionalData", JSON.stringify(formData));
+
       // Navigate to payout setup
-      navigate('/auth/onboarding/payout-setup');
+      navigate("/auth/onboarding/payout-setup");
     } catch (error) {
-      console.error('Professional profile error:', error);
+      console.error("Professional profile error:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleClose = () => {
-    navigate('/auth/login');
+    navigate("/auth/login");
   };
 
   return (
@@ -140,11 +135,16 @@ export function ProfessionalProfile() {
             <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">
               STEP 02 OF 04
             </p>
-            <h1 className="text-2xl font-bold text-onboarding-textPrimary">Professional Identity</h1>
-            
+            <h1 className="text-2xl font-bold text-onboarding-textPrimary">
+              Professional Identity
+            </h1>
+
             {/* Progress Bar */}
             <div className="w-full bg-slate-200 rounded-full h-1">
-              <div className="bg-gradient-to-r from-onboarding-primaryGreen to-onboarding-primaryBlue h-1 rounded-full" style={{ width: '50%' }}></div>
+              <div
+                className="bg-gradient-to-r from-onboarding-primaryGreen to-onboarding-primaryBlue h-1 rounded-full"
+                style={{ width: "50%" }}
+              ></div>
             </div>
           </div>
         </div>
@@ -154,7 +154,7 @@ export function ProfessionalProfile() {
           <CardContent className="p-6 space-y-6">
             {/* Description */}
             <p className="text-onboarding-textSecondary leading-relaxed">
-              To ensure clinical safety and maintain our high standards of care, 
+              To ensure clinical safety and maintain our high standards of care,
               please provide your current medical registration details.
             </p>
             <form onSubmit={handleContinue} className="space-y-8">
@@ -170,7 +170,7 @@ export function ProfessionalProfile() {
                     value={formData.licenseNumber}
                     onChange={(e) => handleLicenseChange(e.target.value)}
                     className={`flex-1 bg-transparent text-sm text-neutral-800 outline-none placeholder:text-neutral-400 font-mono ${
-                      errors.licenseNumber ? 'text-red-600' : ''
+                      errors.licenseNumber ? "text-red-600" : ""
                     }`}
                     placeholder="MDCN/R/0000"
                   />
@@ -187,7 +187,8 @@ export function ProfessionalProfile() {
                 </label>
                 <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
                   <p className="text-sm text-slate-600">
-                    Your license will be verified with the Medical and Dental Council of Nigeria.
+                    Your license will be verified with the Medical and Dental
+                    Council of Nigeria.
                   </p>
                 </div>
               </div>
@@ -201,9 +202,14 @@ export function ProfessionalProfile() {
                 <div className="flex items-center gap-2.5 rounded-lg bg-onboarding-inputBackground px-3 py-2.5">
                   <select
                     value={formData.yearsOfExperience}
-                    onChange={(e) => setFormData(prev => ({ ...prev, yearsOfExperience: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        yearsOfExperience: e.target.value,
+                      }))
+                    }
                     className={`flex-1 bg-transparent text-sm text-neutral-800 outline-none ${
-                      errors.yearsOfExperience ? 'text-red-600' : ''
+                      errors.yearsOfExperience ? "text-red-600" : ""
                     }`}
                   >
                     <option value="">Select experience level</option>
@@ -216,7 +222,9 @@ export function ProfessionalProfile() {
                   </select>
                 </div>
                 {errors.yearsOfExperience && (
-                  <p className="text-sm text-red-600">{errors.yearsOfExperience}</p>
+                  <p className="text-sm text-red-600">
+                    {errors.yearsOfExperience}
+                  </p>
                 )}
               </div>
 
@@ -226,30 +234,31 @@ export function ProfessionalProfile() {
                   Specialties & Expertise
                 </label>
                 <p className="text-sm text-onboarding-textSecondary">
-                  Select all areas that match your qualifications (multiple selections allowed)
+                  Select all areas that match your qualifications (multiple
+                  selections allowed)
                 </p>
-                
+
                 <div className="space-y-3">
                   {/* First Row */}
                   <div className="flex flex-wrap gap-3">
                     <button
                       type="button"
-                      onClick={() => toggleSpecialty('general-practice')}
+                      onClick={() => toggleSpecialty("general-practice")}
                       className={`px-4 py-2 rounded-full border transition-all text-sm font-medium ${
-                        formData.specialties.includes('general-practice')
-                          ? 'bg-teal-500 text-white border-teal-500'
-                          : 'bg-slate-100 text-slate-700 border-slate-200 hover:border-slate-300'
+                        formData.specialties.includes("general-practice")
+                          ? "bg-teal-500 text-white border-teal-500"
+                          : "bg-slate-100 text-slate-700 border-slate-200 hover:border-slate-300"
                       }`}
                     >
                       General Practice ✓
                     </button>
                     <button
                       type="button"
-                      onClick={() => toggleSpecialty('surgery')}
+                      onClick={() => toggleSpecialty("surgery")}
                       className={`px-4 py-2 rounded-full border transition-all text-sm font-medium ${
-                        formData.specialties.includes('surgery')
-                          ? 'bg-teal-500 text-white border-teal-500'
-                          : 'bg-slate-100 text-slate-700 border-slate-200 hover:border-slate-300'
+                        formData.specialties.includes("surgery")
+                          ? "bg-teal-500 text-white border-teal-500"
+                          : "bg-slate-100 text-slate-700 border-slate-200 hover:border-slate-300"
                       }`}
                     >
                       Surgery
@@ -260,22 +269,22 @@ export function ProfessionalProfile() {
                   <div className="flex flex-wrap gap-3">
                     <button
                       type="button"
-                      onClick={() => toggleSpecialty('pediatrics')}
+                      onClick={() => toggleSpecialty("pediatrics")}
                       className={`px-4 py-2 rounded-full border transition-all text-sm font-medium ${
-                        formData.specialties.includes('pediatrics')
-                          ? 'bg-teal-500 text-white border-teal-500'
-                          : 'bg-slate-100 text-slate-700 border-slate-200 hover:border-slate-300'
+                        formData.specialties.includes("pediatrics")
+                          ? "bg-teal-500 text-white border-teal-500"
+                          : "bg-slate-100 text-slate-700 border-slate-200 hover:border-slate-300"
                       }`}
                     >
                       Pediatrics
                     </button>
                     <button
                       type="button"
-                      onClick={() => toggleSpecialty('nursing')}
+                      onClick={() => toggleSpecialty("nursing")}
                       className={`px-4 py-2 rounded-full border transition-all text-sm font-medium ${
-                        formData.specialties.includes('nursing')
-                          ? 'bg-teal-500 text-white border-teal-500'
-                          : 'bg-slate-100 text-slate-700 border-slate-200 hover:border-slate-300'
+                        formData.specialties.includes("nursing")
+                          ? "bg-teal-500 text-white border-teal-500"
+                          : "bg-slate-100 text-slate-700 border-slate-200 hover:border-slate-300"
                       }`}
                     >
                       Nursing
@@ -286,29 +295,29 @@ export function ProfessionalProfile() {
                   <div className="flex flex-wrap gap-3">
                     <button
                       type="button"
-                      onClick={() => toggleSpecialty('anesthesiology')}
+                      onClick={() => toggleSpecialty("anesthesiology")}
                       className={`px-4 py-2 rounded-full border transition-all text-sm font-medium ${
-                        formData.specialties.includes('anesthesiology')
-                          ? 'bg-teal-500 text-white border-teal-500'
-                          : 'bg-slate-100 text-slate-700 border-slate-200 hover:border-slate-300'
+                        formData.specialties.includes("anesthesiology")
+                          ? "bg-teal-500 text-white border-teal-500"
+                          : "bg-slate-100 text-slate-700 border-slate-200 hover:border-slate-300"
                       }`}
                     >
                       Anesthesiology
                     </button>
                     <button
                       type="button"
-                      onClick={() => toggleSpecialty('other')}
+                      onClick={() => toggleSpecialty("other")}
                       className={`px-4 py-2 rounded-full border transition-all text-sm font-medium ${
-                        formData.specialties.includes('other')
-                          ? 'bg-teal-500 text-white border-teal-500'
-                          : 'bg-slate-100 text-slate-700 border-slate-200 hover:border-slate-300'
+                        formData.specialties.includes("other")
+                          ? "bg-teal-500 text-white border-teal-500"
+                          : "bg-slate-100 text-slate-700 border-slate-200 hover:border-slate-300"
                       }`}
                     >
                       + Other
                     </button>
                   </div>
                 </div>
-                
+
                 {errors.specialties && (
                   <p className="text-sm text-red-600">{errors.specialties}</p>
                 )}
@@ -318,14 +327,25 @@ export function ProfessionalProfile() {
               <div className="space-y-3">
                 <div className="flex items-start space-x-3 p-4 bg-slate-50 rounded-xl">
                   <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    <svg
+                      className="w-4 h-4 text-white"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-slate-900 mb-1">Data Privacy</h4>
+                    <h4 className="font-semibold text-slate-900 mb-1">
+                      Data Privacy
+                    </h4>
                     <p className="text-sm text-slate-600">
-                      Your credentials are encrypted and stored following international health data standards.
+                      Your credentials are encrypted and stored following
+                      international health data standards.
                     </p>
                   </div>
                 </div>
@@ -335,14 +355,25 @@ export function ProfessionalProfile() {
               <div className="space-y-3">
                 <div className="flex items-start space-x-3 p-4 bg-slate-50 rounded-xl">
                   <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                    <svg
+                      className="w-4 h-4 text-white"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-slate-900 mb-1">Fast Track</h4>
+                    <h4 className="font-semibold text-slate-900 mb-1">
+                      Fast Track
+                    </h4>
                     <p className="text-sm text-slate-600">
-                      Most licenses are verified automatically within 24 hours of submission.
+                      Most licenses are verified automatically within 24 hours
+                      of submission.
                     </p>
                   </div>
                 </div>
@@ -355,7 +386,7 @@ export function ProfessionalProfile() {
                 isLoading={isLoading}
                 className="w-full rounded-lg bg-gradient-to-r from-onboarding-primaryGreen to-onboarding-primaryBlue py-3 text-sm font-semibold uppercase tracking-widest text-white transition-all shadow-md hover:shadow-lg"
               >
-                {isLoading ? 'Verifying Profile...' : 'Verify & Continue'}
+                {isLoading ? "Verifying Profile..." : "Verify & Continue"}
               </Button>
 
               {/* Skip Option */}
