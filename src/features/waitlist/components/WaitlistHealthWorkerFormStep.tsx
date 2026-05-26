@@ -6,9 +6,11 @@ import {
   WaitlistSubmissionError,
   submitWaitlistLeadToFirebase,
 } from "../services/waitlistFirebaseService";
+import {
+  type HealthWorkerFormErrors,
+  validateHealthWorkerForm,
+} from "../services/waitlistValidation";
 import { useWaitlistFlow } from "./waitlistFlowContext";
-
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type SubmitState = "idle" | "loading" | "error";
 
@@ -17,17 +19,19 @@ export function WaitlistHealthWorkerFormStep() {
   const { state, updateHealthWorkerForm } = useWaitlistFlow();
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
   const [feedback, setFeedback] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<HealthWorkerFormErrors>({});
+
+  const validationErrors = useMemo(
+    () => validateHealthWorkerForm(state.healthWorkerForm),
+    [state.healthWorkerForm],
+  );
 
   const canSubmit = useMemo(() => {
     return (
       state.role === "health-worker" &&
-      state.healthWorkerForm.fullName.trim() &&
-      state.healthWorkerForm.email.trim() &&
-      state.healthWorkerForm.phoneNumber.trim() &&
-      state.healthWorkerForm.professionalTitle.trim() &&
-      state.healthWorkerForm.licenseNumber.trim()
+      Object.keys(validationErrors).length === 0
     );
-  }, [state.healthWorkerForm, state.role]);
+  }, [state.role, validationErrors]);
 
   if (state.role !== "health-worker") {
     return (
@@ -54,30 +58,39 @@ export function WaitlistHealthWorkerFormStep() {
     field: keyof typeof state.healthWorkerForm,
     value: string,
   ) => {
+    const nextForm = {
+      ...state.healthWorkerForm,
+      [field]: value,
+    };
+
     updateHealthWorkerForm({ [field]: value });
 
     if (submitState !== "idle") {
       setSubmitState("idle");
       setFeedback("");
     }
+
+    if (Object.keys(fieldErrors).length > 0) {
+      setFieldErrors(validateHealthWorkerForm(nextForm));
+    }
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    const nextFieldErrors = validateHealthWorkerForm(state.healthWorkerForm);
+    const firstValidationMessage = Object.values(nextFieldErrors).find(Boolean);
+
+    if (firstValidationMessage) {
+      setFieldErrors(nextFieldErrors);
+      setSubmitState("error");
+      setFeedback(firstValidationMessage);
+      return;
+    }
+
+    setFieldErrors({});
+
     const email = state.healthWorkerForm.email.trim().toLowerCase();
-
-    if (!EMAIL_REGEX.test(email)) {
-      setSubmitState("error");
-      setFeedback("Enter a valid work email address.");
-      return;
-    }
-
-    if (!canSubmit) {
-      setSubmitState("error");
-      setFeedback("Complete all required fields before submitting.");
-      return;
-    }
 
     setSubmitState("loading");
     setFeedback("");
@@ -100,7 +113,7 @@ export function WaitlistHealthWorkerFormStep() {
         error.code === "duplicate"
       ) {
         setSubmitState("error");
-        setFeedback("This email is already on the waitlist.");
+        setFeedback("email is on waitlist");
         return;
       }
 
@@ -159,9 +172,15 @@ export function WaitlistHealthWorkerFormStep() {
                 onChange={(event) =>
                   handleChange("fullName", event.target.value)
                 }
-                className="h-12 w-full rounded-xl border border-white/55 bg-[linear-gradient(180deg,_rgba(255,255,255,0.95),_rgba(238,245,251,0.88))] px-4 text-neutral-800 outline-none backdrop-blur transition focus:border-onboarding-primaryBlue"
+                aria-invalid={Boolean(fieldErrors.fullName)}
+                className={`h-12 w-full rounded-xl border bg-[linear-gradient(180deg,_rgba(255,255,255,0.95),_rgba(238,245,251,0.88))] px-4 text-neutral-800 outline-none backdrop-blur transition focus:border-onboarding-primaryBlue ${
+                  fieldErrors.fullName ? "border-error-500" : "border-white/55"
+                }`}
                 placeholder="Dr. Jane Doe"
               />
+              {fieldErrors.fullName ? (
+                <p className="text-xs text-error-700">{fieldErrors.fullName}</p>
+              ) : null}
             </label>
 
             <label className="space-y-2 text-sm text-neutral-700">
@@ -170,9 +189,15 @@ export function WaitlistHealthWorkerFormStep() {
                 type="email"
                 value={state.healthWorkerForm.email}
                 onChange={(event) => handleChange("email", event.target.value)}
-                className="h-12 w-full rounded-xl border border-white/55 bg-[linear-gradient(180deg,_rgba(255,255,255,0.95),_rgba(238,245,251,0.88))] px-4 text-neutral-800 outline-none backdrop-blur transition focus:border-onboarding-primaryBlue"
+                aria-invalid={Boolean(fieldErrors.email)}
+                className={`h-12 w-full rounded-xl border bg-[linear-gradient(180deg,_rgba(255,255,255,0.95),_rgba(238,245,251,0.88))] px-4 text-neutral-800 outline-none backdrop-blur transition focus:border-onboarding-primaryBlue ${
+                  fieldErrors.email ? "border-error-500" : "border-white/55"
+                }`}
                 placeholder="jane@hospital-network.org"
               />
+              {fieldErrors.email ? (
+                <p className="text-xs text-error-700">{fieldErrors.email}</p>
+              ) : null}
             </label>
 
             <label className="space-y-2 text-sm text-neutral-700">
@@ -183,9 +208,19 @@ export function WaitlistHealthWorkerFormStep() {
                 onChange={(event) =>
                   handleChange("phoneNumber", event.target.value)
                 }
-                className="h-12 w-full rounded-xl border border-white/55 bg-[linear-gradient(180deg,_rgba(255,255,255,0.95),_rgba(238,245,251,0.88))] px-4 text-neutral-800 outline-none backdrop-blur transition focus:border-onboarding-primaryBlue"
+                aria-invalid={Boolean(fieldErrors.phoneNumber)}
+                className={`h-12 w-full rounded-xl border bg-[linear-gradient(180deg,_rgba(255,255,255,0.95),_rgba(238,245,251,0.88))] px-4 text-neutral-800 outline-none backdrop-blur transition focus:border-onboarding-primaryBlue ${
+                  fieldErrors.phoneNumber
+                    ? "border-error-500"
+                    : "border-white/55"
+                }`}
                 placeholder="+234 8000 0000"
               />
+              {fieldErrors.phoneNumber ? (
+                <p className="text-xs text-error-700">
+                  {fieldErrors.phoneNumber}
+                </p>
+              ) : null}
             </label>
 
             <label className="space-y-2 text-sm text-neutral-700">
@@ -196,9 +231,19 @@ export function WaitlistHealthWorkerFormStep() {
                 onChange={(event) =>
                   handleChange("professionalTitle", event.target.value)
                 }
-                className="h-12 w-full rounded-xl border border-white/55 bg-[linear-gradient(180deg,_rgba(255,255,255,0.95),_rgba(238,245,251,0.88))] px-4 text-neutral-800 outline-none backdrop-blur transition focus:border-onboarding-primaryBlue"
+                aria-invalid={Boolean(fieldErrors.professionalTitle)}
+                className={`h-12 w-full rounded-xl border bg-[linear-gradient(180deg,_rgba(255,255,255,0.95),_rgba(238,245,251,0.88))] px-4 text-neutral-800 outline-none backdrop-blur transition focus:border-onboarding-primaryBlue ${
+                  fieldErrors.professionalTitle
+                    ? "border-error-500"
+                    : "border-white/55"
+                }`}
                 placeholder="Emergency Physician"
               />
+              {fieldErrors.professionalTitle ? (
+                <p className="text-xs text-error-700">
+                  {fieldErrors.professionalTitle}
+                </p>
+              ) : null}
             </label>
 
             <label className="block space-y-2 text-sm text-neutral-700">
@@ -209,9 +254,19 @@ export function WaitlistHealthWorkerFormStep() {
                 onChange={(event) =>
                   handleChange("licenseNumber", event.target.value)
                 }
-                className="h-12 w-full rounded-xl border border-white/55 bg-[linear-gradient(180deg,_rgba(255,255,255,0.95),_rgba(238,245,251,0.88))] px-4 text-neutral-800 outline-none backdrop-blur transition focus:border-onboarding-primaryBlue"
+                aria-invalid={Boolean(fieldErrors.licenseNumber)}
+                className={`h-12 w-full rounded-xl border bg-[linear-gradient(180deg,_rgba(255,255,255,0.95),_rgba(238,245,251,0.88))] px-4 text-neutral-800 outline-none backdrop-blur transition focus:border-onboarding-primaryBlue ${
+                  fieldErrors.licenseNumber
+                    ? "border-error-500"
+                    : "border-white/55"
+                }`}
                 placeholder="MDC-12345-6789"
               />
+              {fieldErrors.licenseNumber ? (
+                <p className="text-xs text-error-700">
+                  {fieldErrors.licenseNumber}
+                </p>
+              ) : null}
             </label>
 
             <p

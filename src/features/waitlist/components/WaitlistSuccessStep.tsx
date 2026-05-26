@@ -1,18 +1,11 @@
-import { CheckCircle2, Home, RotateCcw } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { CheckCircle2, RotateCcw } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/shared/components/ui/Button";
 import { useWaitlistFlow } from "./waitlistFlowContext";
 
 export function WaitlistSuccessStep() {
   const navigate = useNavigate();
-  const { state, resetFlow } = useWaitlistFlow();
-
-  const submittedEmail =
-    state.role === "hospital"
-      ? state.hospitalForm.email
-      : state.role === "health-worker"
-        ? state.healthWorkerForm.email
-        : "";
+  const { resetFlow } = useWaitlistFlow();
 
   const handleStartAgain = () => {
     resetFlow();
@@ -34,11 +27,11 @@ export function WaitlistSuccessStep() {
           contact you with next steps.
         </p>
 
-        {submittedEmail && (
+        {/* {submittedEmail && (
           <p className="mt-5 rounded-2xl border border-secondary-100 bg-secondary-50 px-4 py-3 text-sm text-secondary-700">
             Confirmation will be sent to {submittedEmail}
           </p>
-        )}
+        )} */}
 
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Button
@@ -49,12 +42,12 @@ export function WaitlistSuccessStep() {
             <RotateCcw className="mr-2 h-4 w-4" /> Start again
           </Button>
 
-          <Link
+          {/* <Link
             to="/"
             className="inline-flex items-center gap-2 rounded-xl border border-neutral-300 px-6 py-3 text-sm font-semibold text-neutral-700 transition-colors hover:bg-neutral-50"
           >
             <Home className="h-4 w-4" /> Go home
-          </Link>
+          </Link> */}
         </div>
       </div>
     </section>
