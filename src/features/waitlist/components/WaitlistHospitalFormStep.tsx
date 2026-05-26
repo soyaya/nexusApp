@@ -6,9 +6,11 @@ import {
   WaitlistSubmissionError,
   submitWaitlistLeadToFirebase,
 } from "../services/waitlistFirebaseService";
+import {
+  type HospitalFormErrors,
+  validateHospitalForm,
+} from "../services/waitlistValidation";
 import { useWaitlistFlow } from "./waitlistFlowContext";
-
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type SubmitState = "idle" | "loading" | "error";
 
@@ -17,18 +19,18 @@ export function WaitlistHospitalFormStep() {
   const { state, updateHospitalForm } = useWaitlistFlow();
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
   const [feedback, setFeedback] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<HospitalFormErrors>({});
+
+  const validationErrors = useMemo(
+    () => validateHospitalForm(state.hospitalForm),
+    [state.hospitalForm],
+  );
 
   const canSubmit = useMemo(() => {
     return (
-      state.role === "hospital" &&
-      state.hospitalForm.fullName.trim() &&
-      state.hospitalForm.email.trim() &&
-      state.hospitalForm.phoneNumber.trim() &&
-      state.hospitalForm.hospitalName.trim() &&
-      state.hospitalForm.location.trim() &&
-      state.hospitalForm.roleCategory.trim()
+      state.role === "hospital" && Object.keys(validationErrors).length === 0
     );
-  }, [state.hospitalForm, state.role]);
+  }, [state.role, validationErrors]);
 
   if (state.role !== "hospital") {
     return (
@@ -55,30 +57,39 @@ export function WaitlistHospitalFormStep() {
     field: keyof typeof state.hospitalForm,
     value: string,
   ) => {
+    const nextForm = {
+      ...state.hospitalForm,
+      [field]: value,
+    };
+
     updateHospitalForm({ [field]: value });
 
     if (submitState !== "idle") {
       setSubmitState("idle");
       setFeedback("");
     }
+
+    if (Object.keys(fieldErrors).length > 0) {
+      setFieldErrors(validateHospitalForm(nextForm));
+    }
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    const nextFieldErrors = validateHospitalForm(state.hospitalForm);
+    const firstValidationMessage = Object.values(nextFieldErrors).find(Boolean);
+
+    if (firstValidationMessage) {
+      setFieldErrors(nextFieldErrors);
+      setSubmitState("error");
+      setFeedback(firstValidationMessage);
+      return;
+    }
+
+    setFieldErrors({});
+
     const email = state.hospitalForm.email.trim().toLowerCase();
-
-    if (!EMAIL_REGEX.test(email)) {
-      setSubmitState("error");
-      setFeedback("Enter a valid work email address.");
-      return;
-    }
-
-    if (!canSubmit) {
-      setSubmitState("error");
-      setFeedback("Complete all required fields before submitting.");
-      return;
-    }
 
     setSubmitState("loading");
     setFeedback("");
@@ -97,12 +108,13 @@ export function WaitlistHospitalFormStep() {
 
       navigate("/waitlist/success");
     } catch (error) {
+      console.log(error);
       if (
         error instanceof WaitlistSubmissionError &&
         error.code === "duplicate"
       ) {
         setSubmitState("error");
-        setFeedback("This email is already on the waitlist.");
+        setFeedback("email is on waitlist");
         return;
       }
 
@@ -162,9 +174,15 @@ export function WaitlistHospitalFormStep() {
                 onChange={(event) =>
                   handleChange("fullName", event.target.value)
                 }
-                className="h-12 w-full rounded-xl border border-white/55 bg-[linear-gradient(180deg,_rgba(255,255,255,0.95),_rgba(238,245,251,0.88))] px-4 text-neutral-800 outline-none backdrop-blur transition focus:border-onboarding-primaryBlue"
+                aria-invalid={Boolean(fieldErrors.fullName)}
+                className={`h-12 w-full rounded-xl border bg-[linear-gradient(180deg,_rgba(255,255,255,0.95),_rgba(238,245,251,0.88))] px-4 text-neutral-800 outline-none backdrop-blur transition focus:border-onboarding-primaryBlue ${
+                  fieldErrors.fullName ? "border-error-500" : "border-white/55"
+                }`}
                 placeholder="Dr. Jane Doe"
               />
+              {fieldErrors.fullName ? (
+                <p className="text-xs text-error-700">{fieldErrors.fullName}</p>
+              ) : null}
             </label>
 
             <label className="space-y-2 text-sm text-neutral-700">
@@ -173,9 +191,15 @@ export function WaitlistHospitalFormStep() {
                 type="email"
                 value={state.hospitalForm.email}
                 onChange={(event) => handleChange("email", event.target.value)}
-                className="h-12 w-full rounded-xl border border-white/55 bg-[linear-gradient(180deg,_rgba(255,255,255,0.95),_rgba(238,245,251,0.88))] px-4 text-neutral-800 outline-none backdrop-blur transition focus:border-onboarding-primaryBlue"
+                aria-invalid={Boolean(fieldErrors.email)}
+                className={`h-12 w-full rounded-xl border bg-[linear-gradient(180deg,_rgba(255,255,255,0.95),_rgba(238,245,251,0.88))] px-4 text-neutral-800 outline-none backdrop-blur transition focus:border-onboarding-primaryBlue ${
+                  fieldErrors.email ? "border-error-500" : "border-white/55"
+                }`}
                 placeholder="jane@hospital-network.org"
               />
+              {fieldErrors.email ? (
+                <p className="text-xs text-error-700">{fieldErrors.email}</p>
+              ) : null}
             </label>
 
             <label className="space-y-2 text-sm text-neutral-700">
@@ -186,9 +210,19 @@ export function WaitlistHospitalFormStep() {
                 onChange={(event) =>
                   handleChange("phoneNumber", event.target.value)
                 }
-                className="h-12 w-full rounded-xl border border-white/55 bg-[linear-gradient(180deg,_rgba(255,255,255,0.95),_rgba(238,245,251,0.88))] px-4 text-neutral-800 outline-none backdrop-blur transition focus:border-onboarding-primaryBlue"
+                aria-invalid={Boolean(fieldErrors.phoneNumber)}
+                className={`h-12 w-full rounded-xl border bg-[linear-gradient(180deg,_rgba(255,255,255,0.95),_rgba(238,245,251,0.88))] px-4 text-neutral-800 outline-none backdrop-blur transition focus:border-onboarding-primaryBlue ${
+                  fieldErrors.phoneNumber
+                    ? "border-error-500"
+                    : "border-white/55"
+                }`}
                 placeholder="+234 8000 0000"
               />
+              {fieldErrors.phoneNumber ? (
+                <p className="text-xs text-error-700">
+                  {fieldErrors.phoneNumber}
+                </p>
+              ) : null}
             </label>
 
             <label className="space-y-2 text-sm text-neutral-700">
@@ -199,9 +233,19 @@ export function WaitlistHospitalFormStep() {
                 onChange={(event) =>
                   handleChange("hospitalName", event.target.value)
                 }
-                className="h-12 w-full rounded-xl border border-white/55 bg-[linear-gradient(180deg,_rgba(255,255,255,0.95),_rgba(238,245,251,0.88))] px-4 text-neutral-800 outline-none backdrop-blur transition focus:border-onboarding-primaryBlue"
+                aria-invalid={Boolean(fieldErrors.hospitalName)}
+                className={`h-12 w-full rounded-xl border bg-[linear-gradient(180deg,_rgba(255,255,255,0.95),_rgba(238,245,251,0.88))] px-4 text-neutral-800 outline-none backdrop-blur transition focus:border-onboarding-primaryBlue ${
+                  fieldErrors.hospitalName
+                    ? "border-error-500"
+                    : "border-white/55"
+                }`}
                 placeholder="Metropolitan General Center"
               />
+              {fieldErrors.hospitalName ? (
+                <p className="text-xs text-error-700">
+                  {fieldErrors.hospitalName}
+                </p>
+              ) : null}
             </label>
 
             <label className="space-y-2 text-sm text-neutral-700">
@@ -211,7 +255,10 @@ export function WaitlistHospitalFormStep() {
                 onChange={(event) =>
                   handleChange("location", event.target.value)
                 }
-                className="h-12 w-full rounded-xl border border-white/55 bg-[linear-gradient(180deg,_rgba(255,255,255,0.95),_rgba(238,245,251,0.88))] px-4 text-neutral-800 outline-none backdrop-blur transition focus:border-onboarding-primaryBlue"
+                aria-invalid={Boolean(fieldErrors.location)}
+                className={`h-12 w-full rounded-xl border bg-[linear-gradient(180deg,_rgba(255,255,255,0.95),_rgba(238,245,251,0.88))] px-4 text-neutral-800 outline-none backdrop-blur transition focus:border-onboarding-primaryBlue ${
+                  fieldErrors.location ? "border-error-500" : "border-white/55"
+                }`}
               >
                 <option value="">Select location</option>
                 <option value="Abuja">Abuja</option>
@@ -219,6 +266,9 @@ export function WaitlistHospitalFormStep() {
                 <option value="Kaduna">Kaduna</option>
                 <option value="Port Harcourt">Port Harcourt</option>
               </select>
+              {fieldErrors.location ? (
+                <p className="text-xs text-error-700">{fieldErrors.location}</p>
+              ) : null}
             </label>
 
             <label className="space-y-2 text-sm text-neutral-700">
@@ -228,13 +278,23 @@ export function WaitlistHospitalFormStep() {
                 onChange={(event) =>
                   handleChange("roleCategory", event.target.value)
                 }
-                className="h-12 w-full rounded-xl border border-white/55 bg-[linear-gradient(180deg,_rgba(255,255,255,0.95),_rgba(238,245,251,0.88))] px-4 text-neutral-800 outline-none backdrop-blur transition focus:border-onboarding-primaryBlue"
+                aria-invalid={Boolean(fieldErrors.roleCategory)}
+                className={`h-12 w-full rounded-xl border bg-[linear-gradient(180deg,_rgba(255,255,255,0.95),_rgba(238,245,251,0.88))] px-4 text-neutral-800 outline-none backdrop-blur transition focus:border-onboarding-primaryBlue ${
+                  fieldErrors.roleCategory
+                    ? "border-error-500"
+                    : "border-white/55"
+                }`}
               >
                 <option value="">Select category</option>
                 <option value="Operations Lead">Operations Lead</option>
                 <option value="Clinical Director">Clinical Director</option>
                 <option value="HR Manager">HR Manager</option>
               </select>
+              {fieldErrors.roleCategory ? (
+                <p className="text-xs text-error-700">
+                  {fieldErrors.roleCategory}
+                </p>
+              ) : null}
             </label>
 
             <p

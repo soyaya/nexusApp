@@ -1,5 +1,3 @@
-const DEFAULT_WAITLIST_COLLECTION = "waitlistEntries";
-
 type WaitlistErrorCode = "config" | "duplicate" | "network" | "unknown";
 
 interface FirebaseWaitlistConfig {
@@ -50,11 +48,9 @@ export class WaitlistSubmissionError extends Error {
 function getFirebaseWaitlistConfig(): FirebaseWaitlistConfig {
   const apiKey = import.meta.env.VITE_FIREBASE_API_KEY?.trim();
   const projectId = import.meta.env.VITE_FIREBASE_PROJECT_ID?.trim();
-  const collectionId =
-    import.meta.env.VITE_FIREBASE_WAITLIST_COLLECTION?.trim() ||
-    DEFAULT_WAITLIST_COLLECTION;
+  const collectionId = import.meta.env.VITE_FIREBASE_WAITLIST_COLLECTION?.trim();
 
-  if (!apiKey || !projectId) {
+  if (!apiKey || !projectId || !collectionId) {
     throw new WaitlistSubmissionError(
       "config",
       "Firebase waitlist configuration is missing.",
@@ -176,10 +172,7 @@ export async function submitWaitlistEmailToFirebase(
     const alreadyExists = await hasExistingEmail(config, normalizedEmail);
 
     if (alreadyExists) {
-      throw new WaitlistSubmissionError(
-        "duplicate",
-        "This email is already on the waitlist.",
-      );
+      throw new WaitlistSubmissionError("duplicate", "email is on waitlist");
     }
 
     await createWaitlistEntry(config, {
@@ -208,10 +201,7 @@ export async function submitWaitlistLeadToFirebase(
     const alreadyExists = await hasExistingEmail(config, normalizedEmail);
 
     if (alreadyExists) {
-      throw new WaitlistSubmissionError(
-        "duplicate",
-        "This email is already on the waitlist.",
-      );
+      throw new WaitlistSubmissionError("duplicate", "email is on waitlist");
     }
 
     await createWaitlistEntry(config, {

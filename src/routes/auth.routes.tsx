@@ -15,7 +15,7 @@ import { WaitlistRoleStep } from "@/features/waitlist/components/WaitlistRoleSte
 import { WaitlistHospitalFormStep } from "@/features/waitlist/components/WaitlistHospitalFormStep";
 import { WaitlistHealthWorkerFormStep } from "@/features/waitlist/components/WaitlistHealthWorkerFormStep";
 import { WaitlistSuccessStep } from "@/features/waitlist/components/WaitlistSuccessStep";
-import { WaitlistPage } from "@/features/waitlist/components/WaitlistPage";
+import { PATHS } from "./paths";
 
 export const authRoutes: RouteObject[] = [
   {
@@ -43,7 +43,12 @@ export const authRoutes: RouteObject[] = [
       { path: "*", element: <Navigate to="login" replace /> },
     ],
   },
-  { path: "/", element: <WaitlistPage /> },
+  {
+    path: "/",
+    element: (
+      <Navigate to={PATHS.medicalStaff.onboarding.registration} replace />
+    ),
+  },
   {
     path: "/waitlist",
     element: <WaitlistFlowPage />,
