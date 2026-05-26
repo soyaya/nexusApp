@@ -63,9 +63,9 @@ export function RoleSelection() {
 
   return (
     <div className="min-h-screen bg-[#F3FAFF] flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-lg">
         {/* Main Role Selection Card */}
-        <Card className="bg-white border border-gray-200 shadow-xl rounded-3xl overflow-hidden min-h-[85vh] sm:min-h-0 flex flex-col">
+        <Card className="bg-white border border-gray-200 shadow-xl rounded-3xl overflow-hidden min-h-[90vh] sm:min-h-[80vh] flex flex-col">
           {/* Header */}
           <div className="bg-white px-6 py-4 border-b border-gray-100 flex-shrink-0">
             <div className="flex items-center justify-between">
