@@ -55,11 +55,13 @@ export function EmailVerificationSuccess() {
         <div className="w-full max-w-md mx-auto text-center">
           {/* Success Icon */}
           <div className="mx-auto mb-8 relative">
-            <div className="w-28 h-28 bg-gradient-to-br from-green-100 to-green-50 rounded-2xl flex items-center justify-center mx-auto">
-              <div className="w-20 h-20 bg-gradient-to-br from-green-600 to-green-700 rounded-xl flex items-center justify-center">
-                <Check className="w-10 h-10 text-white" strokeWidth={3} />
+            <div className="w-28 h-28 bg-gradient-to-br from-green-100 to-green-50 rounded-2xl flex items-center justify-center mx-auto animate-pulse">
+              <div className="w-20 h-20 bg-gradient-to-br from-green-600 to-green-700 rounded-xl flex items-center justify-center animate-bounce">
+                <Check className="w-10 h-10 text-white animate-pulse" strokeWidth={3} />
               </div>
             </div>
+            {/* Pulsing ring effect */}
+            <div className="absolute inset-0 w-28 h-28 bg-green-200 rounded-2xl animate-ping opacity-20 mx-auto"></div>
           </div>
 
           {/* Title */}
