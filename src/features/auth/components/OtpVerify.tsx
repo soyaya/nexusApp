@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/shared/components/ui/Card";
 import { Button } from "@/shared/components/ui/Button";
 import { NexusCareLogo } from "@/shared/components/ui/NexusCareLogo";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Mail, Shield } from "lucide-react";
 
 export function OtpVerify() {
   const navigate = useNavigate();
@@ -111,8 +111,8 @@ export function OtpVerify() {
         localStorage.setItem("emailVerified", "true");
         localStorage.removeItem("pendingEmail");
 
-        // Navigate to role selection
-        navigate("/auth/role-selection");
+        // Navigate to verification success page
+        navigate("/auth/verification-success");
       } else {
         setError("Invalid verification code. Please try again.");
       }

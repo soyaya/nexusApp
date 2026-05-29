@@ -1,15 +1,28 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/shared/components/ui/Card';
 import { Button } from '@/shared/components/ui/Button';
 import { NexusCareLogo } from '@/shared/components/ui/NexusCareLogo';
-import { Mail } from 'lucide-react';
+import { Mail, Check, AlertCircle } from 'lucide-react';
 
 export function EmailLogin() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isValidEmail, setIsValidEmail] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+
+  // Animation on mount
+  useEffect(() => {
+    setIsVisible(true);
+    // Auto-focus on email input
+    const timer = setTimeout(() => {
+      const emailInput = document.querySelector('input[type="email"]') as HTMLInputElement;
+      if (emailInput) emailInput.focus();
+    }, 300);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleSendOTP = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,9 +32,7 @@ export function EmailLogin() {
       return;
     }
 
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    if (!isValidEmail) {
       setError('Please enter a valid email address');
       return;
     }
@@ -30,7 +41,7 @@ export function EmailLogin() {
     setError('');
 
     try {
-      // Simulate OTP sending
+      // Simulate OTP sending with realistic delay
       await new Promise(resolve => setTimeout(resolve, 1500));
       
       // Store email for OTP verification
@@ -49,98 +60,171 @@ export function EmailLogin() {
   const handleEmailChange = (value: string) => {
     setEmail(value);
     
+    // Real-time email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    setIsValidEmail(emailRegex.test(value));
+    
     if (error) {
       setError('');
     }
   };
 
-  return (
-    <div className="min-h-screen bg-[#F3FAFF] flex flex-col items-center justify-center p-6">
-      {/* Large Logo Section */}
-      <div className="text-center mb-16">
-        <div className="mb-6 flex justify-center">
-          <NexusCareLogo size="xl" />
-        </div>
-        <p className="text-onboarding-textSecondary text-lg font-medium">Clinical Precision. Digital Care.</p>
-      </div>
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && email.trim() && isValidEmail && !isLoading) {
+      handleSendOTP(e as any);
+    }
+  };
 
-      {/* Login Card */}
-      <div className="w-full max-w-md">
-        <Card className="bg-white shadow-md border-0 rounded-2xl overflow-hidden">
-          {/* Blue Header Bar */}
-          <div className="h-1 bg-gradient-to-r from-onboarding-primaryGreen to-onboarding-primaryBlue"></div>
-          
-          <CardContent className="p-8">
-            {/* Welcome Section */}
-            <div className="text-center mb-8">
-              <h1 className="text-2xl font-bold text-onboarding-textPrimary mb-2">Welcome Back</h1>
-              <p className="text-onboarding-textSecondary">Enter your email address to access your workspace</p>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[#F3FAFF] via-[#F8FBFF] to-[#EDF7FF] flex items-center justify-center p-4">
+      <div className="w-full max-w-lg">
+        {/* Main Login Card with enhanced shadows and animations */}
+        <Card className={`bg-white/95 backdrop-blur-sm border border-gray-200/50 shadow-2xl shadow-blue-500/10 rounded-3xl overflow-hidden min-h-[90vh] sm:min-h-[80vh] flex flex-col transition-all duration-700 ease-out ${
+          isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
+        }`}>
+          {/* Header with Logo */}
+          <div className="bg-white/80 backdrop-blur-sm px-6 py-4 border-b border-gray-100/50 flex-shrink-0">
+            <div className="flex items-center justify-between">
+              <div className="transition-transform duration-300 hover:scale-105">
+                <NexusCareLogo size="sm" />
+              </div>
+              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center shadow-inner">
+                <div className="w-2 h-2 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full"></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Enhanced Progress Bar */}
+          <div className="bg-white/80 backdrop-blur-sm px-6 pb-2">
+            <div className="w-full bg-gray-200/80 rounded-full h-1.5 overflow-hidden">
+              <div className="bg-gradient-to-r from-onboarding-primaryGreen to-onboarding-primaryBlue h-full rounded-full w-1/4 transition-all duration-1000 ease-out shadow-sm"></div>
+            </div>
+          </div>
+
+          <CardContent className="px-6 py-8 flex-1 flex flex-col justify-center">
+            {/* Welcome Section with staggered animation */}
+            <div className={`text-center mb-12 transition-all duration-700 delay-200 ease-out ${
+              isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+            }`}>
+              <h1 className="text-4xl sm:text-3xl font-bold bg-gradient-to-r from-onboarding-textPrimary to-gray-700 bg-clip-text text-transparent mb-4">
+                Start your professional journey.
+              </h1>
+              <p className="text-lg sm:text-base text-onboarding-textSecondary leading-relaxed">
+                Enter your work email to begin.
+              </p>
             </div>
 
-            <form onSubmit={handleSendOTP} className="space-y-6">
-              {/* Email Address Section */}
-              <div className="space-y-3">
-                <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-widest text-neutral-500">
-                  Email Address
+            <form onSubmit={handleSendOTP} className={`space-y-8 transition-all duration-700 delay-400 ease-out ${
+              isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+            }`}>
+              {/* Enhanced Email Input Section */}
+              <div className="space-y-4">
+                <label className="mb-2 block text-xs font-semibold uppercase tracking-widest text-neutral-500 transition-colors duration-200">
+                  Work Email
                 </label>
                 
-                {/* Email Input Container */}
-                <div className="flex items-center gap-2.5 rounded-lg bg-onboarding-inputBackground px-3 py-2.5">
-                  {/* Email Icon */}
-                  <Mail className="h-4 w-4 text-secondary-600 flex-shrink-0" />
+                {/* Email Input Container with enhanced styling */}
+                <div className={`relative flex items-center gap-3 rounded-xl px-4 py-4 transition-all duration-300 ease-out ${
+                  email ? 'bg-onboarding-inputBackground shadow-inner' : 'bg-onboarding-inputBackground'
+                } ${
+                  error ? 'ring-2 ring-red-200 bg-red-50/50' : 
+                  isValidEmail && email ? 'ring-2 ring-green-200 bg-green-50/50' : 
+                  'focus-within:ring-2 focus-within:ring-blue-200 focus-within:bg-blue-50/30'
+                }`}>
+                  {/* Email Icon with animation */}
+                  <Mail className={`h-5 w-5 flex-shrink-0 transition-all duration-300 ${
+                    error ? 'text-red-500' : 
+                    isValidEmail && email ? 'text-green-500' : 
+                    'text-secondary-600'
+                  }`} />
                   
                   {/* Email Input */}
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => handleEmailChange(e.target.value)}
-                    className="flex-1 bg-transparent text-sm text-neutral-800 placeholder:text-neutral-400 outline-none"
-                    placeholder="enter email"
+                    onKeyPress={handleKeyPress}
+                    className="flex-1 bg-transparent text-base text-neutral-800 placeholder:text-neutral-400 outline-none transition-all duration-200"
+                    placeholder="name@medicalcenter.com"
                   />
+
+                  {/* Validation Icon */}
+                  {email && (
+                    <div className="transition-all duration-300 ease-out">
+                      {isValidEmail ? (
+                        <Check className="h-5 w-5 text-green-500 animate-in fade-in duration-200" />
+                      ) : (
+                        <AlertCircle className="h-5 w-5 text-red-500 animate-in fade-in duration-200" />
+                      )}
+                    </div>
+                  )}
                 </div>
 
+                {/* Enhanced Error Display */}
                 {error && (
-                  <p className="text-sm text-red-600">{error}</p>
+                  <div className="animate-in slide-in-from-left-2 duration-300">
+                    <p className="text-sm text-red-600 flex items-center gap-2">
+                      <AlertCircle className="h-4 w-4" />
+                      {error}
+                    </p>
+                  </div>
                 )}
               </div>
 
-              {/* Continue Button */}
+              {/* Enhanced Continue Button */}
               <Button
                 type="submit"
-                disabled={isLoading || !email.trim()}
-                isLoading={isLoading}
-                className="w-full rounded-lg bg-gradient-to-r from-onboarding-primaryGreen to-onboarding-primaryBlue py-3 text-sm font-semibold uppercase tracking-widest text-white transition-all shadow-md hover:shadow-lg disabled:opacity-50"
+                disabled={isLoading || !email.trim() || !isValidEmail}
+                className={`w-full rounded-xl py-5 text-base font-semibold uppercase tracking-widest text-white transition-all duration-300 ease-out transform ${
+                  isLoading || !email.trim() || !isValidEmail
+                    ? 'bg-gray-300 cursor-not-allowed scale-100'
+                    : 'bg-gradient-to-r from-onboarding-primaryGreen to-onboarding-primaryBlue shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]'
+                }`}
               >
-                Continue →
+                {isLoading ? (
+                  <div className="flex items-center justify-center space-x-2">
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    <span>Sending...</span>
+                  </div>
+                ) : (
+                  <span className="flex items-center justify-center space-x-2">
+                    <span>Continue</span>
+                    <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
+                  </span>
+                )}
               </Button>
 
-              {/* Security Notice */}
-              <div className="flex items-center justify-center space-x-2 text-sm text-onboarding-textSecondary">
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              {/* Enhanced Security Notice */}
+              <div className="flex items-center justify-center space-x-2 text-sm text-onboarding-textSecondary transition-opacity duration-300 hover:opacity-80">
+                <svg className="w-4 h-4 transition-transform duration-200 hover:scale-110" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                 </svg>
                 <span>Secure OTP will be sent to your email.</span>
               </div>
             </form>
 
-            {/* Support Link */}
-            <div className="mt-8 text-center">
+            {/* Enhanced Support Link */}
+            <div className={`mt-10 text-center transition-all duration-700 delay-600 ease-out ${
+              isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+            }`}>
               <p className="text-sm text-onboarding-textSecondary">
                 Need help accessing your account?{' '}
-                <button className="text-secondary-600 hover:text-secondary-700 font-medium">
+                <button className="text-secondary-600 hover:text-secondary-700 font-medium transition-colors duration-200 hover:underline">
                   Support
                 </button>
               </p>
             </div>
+
+            {/* Enhanced Footer Text */}
+            <div className={`mt-8 pt-6 border-t border-gray-100/50 flex-shrink-0 transition-all duration-700 delay-700 ease-out ${
+              isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+            }`}>
+              <p className="text-xs text-neutral-400 uppercase tracking-wider font-medium text-center">
+                Trusted by Healthcare Professionals Across Nigeria
+              </p>
+            </div>
           </CardContent>
         </Card>
-
-        {/* Footer Text */}
-        <div className="mt-8 text-center">
-          <p className="text-xs text-neutral-400 uppercase tracking-wider font-medium">
-            Trusted by Healthcare Professionals Across Nigeria
-          </p>
-        </div>
       </div>
     </div>
   );

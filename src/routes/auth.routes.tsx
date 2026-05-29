@@ -2,8 +2,10 @@ import type { RouteObject } from "react-router-dom";
 import { Navigate } from "react-router-dom";
 import {
   EmailLogin,
+  EmailSignup,
   OtpVerify,
   RoleSelection,
+  EmailVerificationSuccess,
 } from "@/features/auth/components";
 import {
   ProfessionalProfile,
@@ -18,8 +20,10 @@ export const authRoutes: RouteObject[] = [
     path: "auth",
     children: [
       { index: true, element: <Navigate to="login" replace /> },
+      { path: "signup", element: <EmailSignup /> },
       { path: "login", element: <EmailLogin /> },
       { path: "verify-otp", element: <OtpVerify /> },
+      { path: "verification-success", element: <EmailVerificationSuccess /> },
       { path: "role-selection", element: <RoleSelection /> },
       {
         path: "onboarding",
